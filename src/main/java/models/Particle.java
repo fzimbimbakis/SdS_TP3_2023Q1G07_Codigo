@@ -58,7 +58,7 @@ public class Particle{
             return Double.MAX_VALUE;
         double v2 = Math.pow(deltaVx, 2) + Math.pow(deltaVy, 2);
 
-        double d = Math.pow(deltaX*deltaVx +  deltaY*deltaVy, 2) - v2 * (Math.pow(deltaX,2) + Math.pow(deltaY,2) - (radius - b.radius));
+        double d = Math.pow(deltaX*deltaVx +  deltaY*deltaVy, 2) - v2 * (Math.pow(deltaX,2) + Math.pow(deltaY,2) - Math.pow(radius + b.radius, 2));
         if(d < 0){
             return Double.MAX_VALUE;
         }
@@ -92,8 +92,8 @@ public class Particle{
 
         double J = (2 * mass * b.mass * (deltaX*deltaVx +  deltaY*deltaVy)) / ((radius + b.radius) * (mass + b.mass));
 
-        double Jx = (J * deltaX) / (mass + b.mass);
-        double Jy = (J * deltaY) / (mass + b.mass);
+        double Jx = (J * deltaX) / (radius + b.radius);
+        double Jy = (J * deltaY) / (radius + b.radius);
 
         Vx = Vx + Jx/mass;
         Vy = Vy + Jy/mass;
