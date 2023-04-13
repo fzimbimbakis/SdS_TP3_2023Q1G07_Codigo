@@ -33,11 +33,8 @@ public class ParticleCollisionSystem {
         while (ballsIn != BALL_COUNT){
 
             //// Search next event
-            do {
-                collision = queue.poll();
-                if(collision == null)
-                    throw new IllegalStateException("Null collision");
-            }while (collision.wasSuperveningEvent());
+            queue.removeIf(Collision::wasSuperveningEvent);
+            collision = queue.remove();
 
             //// Move particles
             time = collision.getT();
@@ -90,7 +87,7 @@ public class ParticleCollisionSystem {
         }
         if(B != null) {
             for (Particle p : particles) {
-                if (!p.equals(B) && !p.equals(A))
+                if (!p.equals(B))
                     queue.add(new Collision(B, p, config.getMaxX(), config.getMaxY()));
             }
             addDefaultCollisions(B);
@@ -98,14 +95,12 @@ public class ParticleCollisionSystem {
     }
 
     private void fillQueue(){
-        List<Particle> done = new ArrayList<>();
         particles.forEach(
                 p1 -> {
                     particles.forEach(p2 -> {
-                        if(!done.contains(p2) && !p1.equals(p2))
+                        if(!p1.equals(p2))
                             queue.add(new Collision(p1, p2, config.getMaxX(), config.getMaxY()));
                     });
-                    done.add(p1);
 
                     addDefaultCollisions(p1);
                 }
@@ -113,8 +108,10 @@ public class ParticleCollisionSystem {
     }
 
     private void addDefaultCollisions(Particle p){
-        queue.add(new Collision(p, null, config.getMaxX(), config.getMaxY()));
-        queue.add(new Collision(null, p, config.getMaxX(), config.getMaxY()));
+        if(p.getVx() != 0)
+            queue.add(new Collision(p, null, config.getMaxX(), config.getMaxY()));
+        if(p.getVy() != 0)
+            queue.add(new Collision(null, p, config.getMaxX(), config.getMaxY()));
 
         fixedParticles.forEach(f -> {
             queue.add(new Collision(p, f, config.getMaxX(), config.getMaxY()));
