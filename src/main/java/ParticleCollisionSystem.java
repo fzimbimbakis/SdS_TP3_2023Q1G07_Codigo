@@ -13,7 +13,7 @@ public class ParticleCollisionSystem {
     private static final String JSON_CONFIG_PATH = "./src/main/java/config.json";
     private static final String OUTPUT_NAME = "output";
 
-    private static final int BALL_COUNT = 15;
+    private static final int BALL_COUNT = 16;
     private int ballsIn = 0;
     private static final Double TIME_STEP = 0.001;
 

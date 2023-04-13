@@ -3,7 +3,7 @@ package models;
 
 public class Particle{
 
-    public static enum Color{
+    public enum Color {
         BLACK,
         WHITE,
         RED
@@ -52,24 +52,26 @@ public class Particle{
         return (radius - y)/Vy;
     }
 
-    public double collides(Particle b){
-        double deltaX = x - b.x;
-        double deltaY = y - b.y;
-        double deltaVx = Vx - b.Vx;
-        double deltaVy = Vy - b.Vy;
+    public double collides(Particle b) {
+        double deltaX = b.x - x;
+        double deltaY = b.y - y;
+        double deltaVx = b.Vx - Vx;
+        double deltaVy = b.Vy - Vy;
 
+        double productDeltaVR = deltaX * deltaVx + deltaY * deltaVy;
 
-        if (deltaX*deltaVx +  deltaY*deltaVy >= 0)
+        if (productDeltaVR >= 0)
             return Double.MAX_VALUE;
         double v2 = Math.pow(deltaVx, 2) + Math.pow(deltaVy, 2);
 
-        double d = Math.pow(deltaX*deltaVx +  deltaY*deltaVy, 2) - v2 * (Math.pow(deltaX,2) + Math.pow(deltaY,2) - Math.pow(radius + b.radius, 2));
-        if(d < 0){
+        double r2 = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
+
+        double d = Math.pow(productDeltaVR, 2) - v2 * (r2 - Math.pow(radius + b.radius, 2));
+
+        if (d < 0)
             return Double.MAX_VALUE;
-        }
 
-        return - ((deltaX*deltaVx +  deltaY*deltaVy) + Math.sqrt(d)) / v2;
-
+        return -(productDeltaVR + Math.sqrt(d)) / v2;
     }
 
     public void bounceX(){
@@ -82,35 +84,39 @@ public class Particle{
         Vy = -Vy;
     }
 
-    public void bounce(Particle b){
+    public void bounce(Particle b) {
         collisionsCount++;
 
-        if(b.isFixed)
+        if (b.isFixed)
             return;
         else
             b.collisionsCount++;
 
-        double deltaX = x - b.x;
-        double deltaY = y - b.y;
-        double deltaVx = Vx - b.Vx;
-        double deltaVy = Vy - b.Vy;
+        double deltaX = b.x - x;
+        double deltaY = b.y - y;
+        double deltaVx = b.Vx - Vx;
+        double deltaVy = b.Vy - Vy;
 
-        double J = (2 * mass * b.mass * (deltaX*deltaVx +  deltaY*deltaVy)) / ((radius + b.radius) * (mass + b.mass));
+        double J = (2 * mass * b.mass * (deltaX * deltaVx + deltaY * deltaVy)) / ((radius + b.radius) * (mass + b.mass));
 
         double Jx = (J * deltaX) / (radius + b.radius);
         double Jy = (J * deltaY) / (radius + b.radius);
 
-        Vx = Vx + Jx/mass;
-        Vy = Vy + Jy/mass;
+        Vx = Vx + Jx / mass;
+        Vy = Vy + Jy / mass;
 
-        b.Vx = b.Vx - Jx/b.mass;
+        b.Vx = b.Vx - Jx / b.mass;
         b.Vy = b.Vy - Jy/b.mass;
 
     }
 
-    public void move (double time){
+    public void move(double time, double maxX, double maxY) {
         x += Vx * time;
+        if (x > maxX)
+            throw new IllegalStateException("Ball " + this.number + " out of bounds: x = " + x);
         y += Vy * time;
+        if (y > maxY)
+            throw new IllegalStateException("Ball " + this.number + " out of bounds: y = " + y);
     }
 
     public int getCollisionCount() {
@@ -134,5 +140,21 @@ public class Particle{
         }
 
         return x + " " + y + " " + Vx + " " + Vy + " " + radius;
+    }
+
+    public double getVx() {
+        return Vx;
+    }
+
+    public double getVy() {
+        return Vy;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
     }
 }
