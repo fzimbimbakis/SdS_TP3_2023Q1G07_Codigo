@@ -9,27 +9,32 @@ import java.util.List;
 
 public class Ovito {
 
-    public static File createFile(String path) {
+    private static final String RESOURCES_PATH = "./src/main/resources/";
+
+    public static String createFile(String name) {
         try {
-            File file = new File(path);
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
-            } else {
-                throw new IllegalStateException("Eliminar archivo " + path + " y correr devuelta.");
+            int count = 1;
+            String file_path = RESOURCES_PATH + name + count + ".xyz";
+            File file = new File(file_path);
+            while (!file.createNewFile()) {
+                count += 1;
+                file_path = RESOURCES_PATH + name + count + ".xyz";
+                file = new File(RESOURCES_PATH + name + count + ".xyz");
             }
-            return file;
+            System.out.println("File created: " + file_path);
+            return file_path;
         } catch (IOException e) {
-            throw new RuntimeException("Error writing random particles to file (" + path + ") in ParticleUtils.createFile.");
+            throw new RuntimeException("Error writing random particles to file (" + name + ") in ParticleUtils.createFile.");
         }
     }
 
-    public static void writeParticlesToFileXyz(String filePath, Double time, List<Particle> particles, List<Particle> fixed){
+    public static void writeParticlesToFileXyz(String filePath, Double time, List<Particle> particles, List<Particle> fixed, Particle A, Particle B) {
         try {
             FileWriter myWriter = new FileWriter(filePath, true);
-            myWriter.write((fixed.size() + particles.size()) + "\n" + time + "\n");
-            for (Particle particle: fixed)
+            myWriter.write((fixed.size() + particles.size()) + "\n" + time + " " + (A != null ? A.getNumber() : "---") + " " + (B != null ? B.getNumber() : "---") + "\n");
+            for (Particle particle : fixed)
                 myWriter.write(particle.toString() + "\n");
-            for (Particle particle: particles)
+            for (Particle particle : particles)
                 myWriter.write(particle.toString() + "\n");
             myWriter.close();
         } catch (IOException e) {

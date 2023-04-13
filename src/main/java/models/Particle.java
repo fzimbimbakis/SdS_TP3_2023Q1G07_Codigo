@@ -18,8 +18,9 @@ public class Particle{
     private final double mass;
     private int collisionsCount;
     private final Color color;
+    private final int number;
 
-    public Particle(double x, double y, double vx, double vy, double radius, double mass, boolean isFixed, Color color) {
+    public Particle(double x, double y, double vx, double vy, double radius, double mass, boolean isFixed, Color color, int number) {
         this.x = x;
         this.y = y;
         Vx = vx;
@@ -28,8 +29,12 @@ public class Particle{
         this.mass = mass;
         this.isFixed = isFixed;
         this.color = color;
+        this.number = number;
     }
 
+    public int getNumber() {
+        return number;
+    }
 
     public double collidesX(double xMax){
         if(Vx == 0)
