@@ -11,15 +11,15 @@ public class Ovito {
 
     private static final String RESOURCES_PATH = "./src/main/resources/";
 
-    public static String createFile(String name) {
+    public static String createFile(String name, String extension) {
         try {
             int count = 1;
-            String file_path = RESOURCES_PATH + name + count + ".xyz";
+            String file_path = RESOURCES_PATH + name + count + "." + extension;
             File file = new File(file_path);
             while (!file.createNewFile()) {
                 count += 1;
-                file_path = RESOURCES_PATH + name + count + ".xyz";
-                file = new File(RESOURCES_PATH + name + count + ".xyz");
+                file_path = RESOURCES_PATH + name + count + "." + extension;
+                file = new File(RESOURCES_PATH + name + count + "." + extension);
             }
             System.out.println("File created: " + file_path);
             return file_path;
@@ -42,6 +42,23 @@ public class Ovito {
         }
     }
 
+    public static <T> void writeListToFIle(List<T> list, String fileName, String extension){
+        try {
+            String file_path = Ovito.createFile(fileName, extension);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < list.size(); i++) {
+                sb.append(list.get(i).toString());
+                if (i < list.size() - 1) {
+                    sb.append("\n");
+                }
+            }
+            FileWriter myWriter = new FileWriter(file_path, true);
+            myWriter.write(sb.toString());
+            myWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 }

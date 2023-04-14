@@ -9,28 +9,32 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class ParticleCollisionSystem {
-
-    private static final String JSON_CONFIG_PATH = "./src/main/java/config.json";
     private static final String OUTPUT_NAME = "output";
-
+    private static final String OUTPUT_EXTENSION = "xyz";
     private static final int BALL_COUNT = 16;
-    private int ballsIn = 0;
     private static final Double TIME_STEP = 0.001;
-
+    JsonConfigReader config;
+    private int ballsIn = 0;
     PriorityQueue<Collision> queue = new PriorityQueue<>();
+    List<Particle> particles;
+    List<Particle> fixedParticles;
+    private final List<Double> eventTimes = new ArrayList<>();
+    private Double finalTime = 0.0;
 
-    JsonConfigReader config = new JsonConfigReader(JSON_CONFIG_PATH);
-    List<Particle> particles = ParticleUtils.generateInitialParticles(config);
-    List<Particle> fixedParticles = ParticleUtils.generateFixedParticles(config);
+    public ParticleCollisionSystem(JsonConfigReader config) {
+        this.config = config;
+        this.particles = ParticleUtils.generateInitialParticles(config);
+        this.fixedParticles = ParticleUtils.generateFixedParticles(config);
+    }
 
-    public void run(){
+    public void run() {
         this.fillQueue();
         double time = 0.0;
         Collision collision;
 
-        String path = Ovito.createFile(OUTPUT_NAME);
+        String path = Ovito.createFile(OUTPUT_NAME, OUTPUT_EXTENSION);
         Ovito.writeParticlesToFileXyz(path, time, particles, fixedParticles, null, null);
-        while (ballsIn != BALL_COUNT){
+        while (ballsIn != BALL_COUNT) {
 
             //// Search next event
             queue.removeIf(Collision::wasSuperveningEvent);
@@ -41,13 +45,15 @@ public class ParticleCollisionSystem {
             moveAllParticlesPrinting(time, collision, path);
 
             //// Execute collision
+            eventTimes.add(this.finalTime + time);
+            this.finalTime += time;
             collision.execute();
 
             //// If one is fixed -> Remove not fixed ball
-            if(collision.getB() != null && collision.getB().isFixed()) {
+            if (collision.getB() != null && collision.getB().isFixed()) {
                 particles.remove(collision.getA());
                 ballsIn++;
-            }else
+            } else
                 updateQueue(collision.getA(), collision.getB());
 
 
@@ -108,9 +114,9 @@ public class ParticleCollisionSystem {
     }
 
     private void addDefaultCollisions(Particle p){
-        if(p.getVx() != 0)
+        if (p.getVx() != 0)
             queue.add(new Collision(p, null, config.getMaxX(), config.getMaxY()));
-        if(p.getVy() != 0)
+        if (p.getVy() != 0)
             queue.add(new Collision(null, p, config.getMaxX(), config.getMaxY()));
 
         fixedParticles.forEach(f -> {
@@ -118,5 +124,11 @@ public class ParticleCollisionSystem {
         });
     }
 
+    public List<Double> getEventTimes() {
+        return eventTimes;
+    }
 
+    public Double getFinalTime() {
+        return finalTime;
+    }
 }
