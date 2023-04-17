@@ -14,7 +14,7 @@ public class JsonConfigReader {
     private final Double maxX;
     private final Double maxY;
     private final Double whiteX;
-    private final Double whiteY;
+    private Double whiteY;
     private final Double whiteV;
     private final Double triangleX;
     private final Double triangleY;
@@ -89,5 +89,9 @@ public class JsonConfigReader {
 
     public Double getMaxEpsilon() {
         return maxEpsilon;
+    }
+
+    public void setWhiteY(Double whiteY) {
+        this.whiteY = whiteY;
     }
 }

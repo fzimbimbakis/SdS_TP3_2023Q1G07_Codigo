@@ -42,18 +42,27 @@ public class Ovito {
         }
     }
 
-    public static <T> void writeListToFIle(List<T> list, String fileName, String extension){
+    public static <T> void writeListToFIle(List<T> list, String file_path, boolean end) {
         try {
-            String file_path = Ovito.createFile(fileName, extension);
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < list.size(); i++) {
                 sb.append(list.get(i).toString());
-                if (i < list.size() - 1) {
+                if (!end || i < list.size() - 1) {
                     sb.append("\n");
                 }
             }
             FileWriter myWriter = new FileWriter(file_path, true);
             myWriter.write(sb.toString());
+            myWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> void writeToFIle(T o, String file_path) {
+        try {
+            FileWriter myWriter = new FileWriter(file_path, true);
+            myWriter.write(o.toString());
             myWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

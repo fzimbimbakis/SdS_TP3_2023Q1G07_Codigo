@@ -20,20 +20,32 @@ public class ParticleCollisionSystem {
     List<Particle> fixedParticles;
     private final List<Double> eventTimes = new ArrayList<>();
     private Double finalTime = 0.0;
+    private final boolean generateXYZ;
 
     public ParticleCollisionSystem(JsonConfigReader config) {
         this.config = config;
         this.particles = ParticleUtils.generateInitialParticles(config);
         this.fixedParticles = ParticleUtils.generateFixedParticles(config);
+        this.generateXYZ = false;
+    }
+
+    public ParticleCollisionSystem(JsonConfigReader config, boolean generateXYZ) {
+        this.config = config;
+        this.particles = ParticleUtils.generateInitialParticles(config);
+        this.fixedParticles = ParticleUtils.generateFixedParticles(config);
+        this.generateXYZ = generateXYZ;
     }
 
     public void run() {
         this.fillQueue();
         double time = 0.0;
         Collision collision;
+        String path = null;
 
-        String path = Ovito.createFile(OUTPUT_NAME, OUTPUT_EXTENSION);
-        Ovito.writeParticlesToFileXyz(path, time, particles, fixedParticles, null, null);
+        if (this.generateXYZ) {
+            path = Ovito.createFile(OUTPUT_NAME, OUTPUT_EXTENSION);
+            Ovito.writeParticlesToFileXyz(path, time, particles, fixedParticles, null, null);
+        }
         while (ballsIn != BALL_COUNT) {
 
             //// Search next event
@@ -42,10 +54,12 @@ public class ParticleCollisionSystem {
 
             //// Move particles
             time = collision.getT();
-            moveAllParticlesPrinting(time, collision, path);
+            moveAllParticles(time);
+            if (this.generateXYZ)
+                Ovito.writeParticlesToFileXyz(path, time, particles, fixedParticles, collision.getA(), collision.getB());
 
             //// Execute collision
-            eventTimes.add(this.finalTime + time);
+            eventTimes.add(time);
             this.finalTime += time;
             collision.execute();
 
@@ -60,11 +74,10 @@ public class ParticleCollisionSystem {
         }
     }
 
-    private void moveAllParticles(double time, Collision collision, String path){
+    private void moveAllParticles(double time) {
         for (Particle p : particles) {
             p.move(time, config.getMaxX(), config.getMaxY());
         }
-        Ovito.writeParticlesToFileXyz(path, time, particles, fixedParticles, collision.getA(), collision.getB());
     }
 
     private void moveAllParticlesPrinting(double time, Collision collision, String path){
