@@ -2,9 +2,9 @@ import os
 import glob
 import imageio
 # Ruta a la carpeta que contiene las imágenes
-animation_frames_folder = '/home/bsquillari/IdeaProjects/SdS_TP3_2023Q1G07_Codigo/src/main/resources/animation_frames'
+animation_frames_folder = '/Users/facuzf/Downloads/SdS_TP3_2023Q1G07_Codigo/src/main/resources/animations/white_middle/frames'
 frames_files_name_format = 'frame*.png'
-animation_name = '/home/bsquillari/IdeaProjects/SdS_TP3_2023Q1G07_Codigo/src/main/resources/animation1.mp4'
+animation_name = '/Users/facuzf/Downloads/SdS_TP3_2023Q1G07_Codigo/src/main/resources/animations/white_middle/animation.mp4'
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
     images = sorted(glob.glob(os.path.join(animation_frames_folder, frames_files_name_format)))
 
     # Crear la animación con las imágenes en la lista
-    with imageio.get_writer(animation_name, fps=30) as writer:
+    with imageio.get_writer(animation_name, fps=10) as writer:
         for image in images:
             # Leer la imagen
             img = imageio.imread(image)
