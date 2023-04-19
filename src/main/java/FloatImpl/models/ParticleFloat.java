@@ -1,30 +1,31 @@
-package models;
+package FloatImpl.models;
 
 
-public class Particle{
+public class ParticleFloat {
 
     public enum Color {
         BLACK,
         WHITE,
-        RED
+        RED,
+        BLUE
     }
 
     private final boolean isFixed;
-    private double x;
-    private double y;
-    private double Vx;
-    private double Vy;
-    private final double radius;
-    private final double mass;
+    private float x;
+    private float y;
+    private float Vx;
+    private float Vy;
+    private final float radius;
+    private final float mass;
     private int collisionsCount;
     private final Color color;
     private final int number;
 
-    public static Particle copy(Particle particle){
-        return new Particle(particle.x, particle.y, particle.Vx, particle.Vy, particle.radius, particle.mass, particle.isFixed, particle.color, particle.number);
+    public static ParticleFloat copy(ParticleFloat particle){
+        return new ParticleFloat(particle.x, particle.y, particle.Vx, particle.Vy, particle.radius, particle.mass, particle.isFixed, particle.color, particle.number);
     }
 
-    public Particle(double x, double y, double vx, double vy, double radius, double mass, boolean isFixed, Color color, int number) {
+    public ParticleFloat(float x, float y, float vx, float vy, float radius, float mass, boolean isFixed, Color color, int number) {
         this.x = x;
         this.y = y;
         Vx = vx;
@@ -40,42 +41,42 @@ public class Particle{
         return number;
     }
 
-    public double collidesX(double xMax){
+    public Float collidesX(float xMax){
         if(Vx == 0)
-            return Double.MAX_VALUE;
+            return Float.MAX_VALUE;
         if( Vx > 0)
              return (xMax - radius - x)/Vx;
         return (radius - x)/Vx;
     }
 
-    public double collidesY(double yMax){
+    public Float collidesY(float yMax){
         if(Vy == 0)
-            return Double.MAX_VALUE;
+            return Float.MAX_VALUE;
         if( Vy > 0)
             return (yMax - radius - y)/Vy;
         return (radius - y)/Vy;
     }
 
-    public double collides(Particle b) {
-        double deltaX = b.x - x;
-        double deltaY = b.y - y;
-        double deltaVx = b.Vx - Vx;
-        double deltaVy = b.Vy - Vy;
+    public Float collides(ParticleFloat b) {
+        float deltaX = b.x - x;
+        float deltaY = b.y - y;
+        float deltaVx = b.Vx - Vx;
+        float deltaVy = b.Vy - Vy;
 
-        double productDeltaVR = deltaX * deltaVx + deltaY * deltaVy;
+        float productDeltaVR = deltaX * deltaVx + deltaY * deltaVy;
 
         if (productDeltaVR >= 0)
-            return Double.MAX_VALUE;
-        double v2 = Math.pow(deltaVx, 2) + Math.pow(deltaVy, 2);
+            return Float.MAX_VALUE;
+        float v2 = ((float)Math.pow(deltaVx, 2)) + ((float)Math.pow(deltaVy, 2));
 
-        double r2 = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
+        float r2 = ((float)Math.pow(deltaX, 2)) + ((float)Math.pow(deltaY, 2));
 
-        double d = Math.pow(productDeltaVR, 2) - v2 * (r2 - Math.pow(radius + b.radius, 2));
+        float d = ((float)Math.pow(productDeltaVR, 2)) - v2 * (r2 - ((float)Math.pow(radius + b.radius, 2)));
 
         if (d < 0)
-            return Double.MAX_VALUE;
+            return Float.MAX_VALUE;
 
-        return -(productDeltaVR + Math.sqrt(d)) / v2;
+        return -(productDeltaVR + ((float)Math.sqrt(d))) / v2;
     }
 
     public void bounceX(){
@@ -88,7 +89,7 @@ public class Particle{
         Vy = -Vy;
     }
 
-    public void bounce(Particle b) {
+    public void bounce(ParticleFloat b) {
         collisionsCount++;
 
         if (b.isFixed)
@@ -96,15 +97,15 @@ public class Particle{
         else
             b.collisionsCount++;
 
-        double deltaX = b.x - x;
-        double deltaY = b.y - y;
-        double deltaVx = b.Vx - Vx;
-        double deltaVy = b.Vy - Vy;
+        float deltaX = b.x - x;
+        float deltaY = b.y - y;
+        float deltaVx = b.Vx - Vx;
+        float deltaVy = b.Vy - Vy;
 
-        double J = (2 * mass * b.mass * (deltaX * deltaVx + deltaY * deltaVy)) / ((radius + b.radius) * (mass + b.mass));
+        float J = (2 * mass * b.mass * (deltaX * deltaVx + deltaY * deltaVy)) / ((radius + b.radius) * (mass + b.mass));
 
-        double Jx = (J * deltaX) / (radius + b.radius);
-        double Jy = (J * deltaY) / (radius + b.radius);
+        float Jx = (J * deltaX) / (radius + b.radius);
+        float Jy = (J * deltaY) / (radius + b.radius);
 
         Vx = Vx + Jx / mass;
         Vy = Vy + Jy / mass;
@@ -114,7 +115,7 @@ public class Particle{
 
     }
 
-    public void move(double time, double maxX, double maxY) {
+    public void move(float time, float maxX, float maxY) {
         x += Vx * time;
         if (x > maxX)
             throw new IllegalStateException("Ball " + this.number + " out of bounds: x = " + x);
@@ -140,41 +141,26 @@ public class Particle{
                 return x + " " + y + " " + Vx + " " + Vy + " " + radius + " 0 0 0";
             case WHITE:
                 return x + " " + y + " " + Vx + " " + Vy + " " + radius + " 255 255 255";
-
+            case BLUE:
+                return x + " " + y + " " + Vx + " " + Vy + " " + radius + " 0 0 255";
         }
 
         return x + " " + y + " " + Vx + " " + Vy + " " + radius;
     }
 
-    public double getVx() {
+    public float getVx() {
         return Vx;
     }
 
-    public double getVy() {
+    public float getVy() {
         return Vy;
     }
 
-    public double getX() {
+    public float getX() {
         return x;
     }
 
-    public double getY() {
+    public float getY() {
         return y;
-    }
-
-    public double getRadius() {
-        return radius;
-    }
-
-    public double getMass() {
-        return mass;
-    }
-
-    public int getCollisionsCount() {
-        return collisionsCount;
-    }
-
-    public Color getColor() {
-        return color;
     }
 }

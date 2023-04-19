@@ -12,7 +12,6 @@ public class ParticleCollisionSystem {
     private static final String OUTPUT_NAME = "output";
     private static final String OUTPUT_EXTENSION = "xyz";
     private static final int BALL_COUNT = 16;
-    private static final Double TIME_STEP = 0.001;
     JsonConfigReader config;
     private int ballsIn = 0;
     PriorityQueue<Collision> queue = new PriorityQueue<>();
@@ -32,6 +31,13 @@ public class ParticleCollisionSystem {
     public ParticleCollisionSystem(JsonConfigReader config, boolean generateXYZ) {
         this.config = config;
         this.particles = ParticleUtils.generateInitialParticles(config);
+        this.fixedParticles = ParticleUtils.generateFixedParticles(config);
+        this.generateXYZ = generateXYZ;
+    }
+
+    public ParticleCollisionSystem( List<Particle> particles, JsonConfigReader config, boolean generateXYZ) {
+        this.config = config;
+        this.particles = particles;
         this.fixedParticles = ParticleUtils.generateFixedParticles(config);
         this.generateXYZ = generateXYZ;
     }
@@ -78,21 +84,6 @@ public class ParticleCollisionSystem {
         for (Particle p : particles) {
             p.move(time, config.getMaxX(), config.getMaxY());
         }
-    }
-
-    private void moveAllParticlesPrinting(double time, Collision collision, String path){
-        double step = TIME_STEP;
-        int steps = (int) (time/step);
-        for (int i = 0; i < steps; i++) {
-            for (Particle p : particles) {
-                p.move(step, config.getMaxX(), config.getMaxY());
-            }
-            Ovito.writeParticlesToFileXyz(path, time, particles, fixedParticles, collision.getA(), collision.getB());
-        }
-        for (Particle p : particles) {
-            p.move(time - ((double) steps) * step, config.getMaxX(), config.getMaxY());
-        }
-        Ovito.writeParticlesToFileXyz(path, time, particles, fixedParticles, collision.getA(), collision.getB());
     }
 
     private void updateQueue(Particle A, Particle B){
