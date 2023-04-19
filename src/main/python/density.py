@@ -1,32 +1,19 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import geom
+
+from utils import get_times
 
 
-def get_times(path):
-    # Leer el archivo de tiempos
-    with open(path) as file:
-        tiempos_str = file.read()
-
-    # Convertir los tiempos a una lista de números
-    tiempos = list(map(float, tiempos_str.split('\n')))
-    data = np.array(tiempos)
-
-    return data
-
-
-if __name__ == "__main__":
-    x1 = get_times('../resources/times_48,22_1.txt')
+def density_graph(directory):
+    x1 = get_times('../resources/times_48.22_1.txt')
     x2 = get_times('../resources/times_56_1.txt')
     x3 = get_times('../resources/times_42_1.txt')
 
     # Grafica la densidad
-    plt.xlabel('Tiempo')
+    plt.xlabel('Tiempo (s)')
     plt.ylabel('Densidad de probabilidad')
-    #plt.title('Evolución de la densidad de prob.')
     plt.xscale("log")
     plt.yscale("log")
-    #plt.hist(x1, bins=[0, 0.02, 0.04, 0.06, 0.1, 0.2, 0.5], range=(0, 0.5), edgecolor='black', density=True, color='#1b7a5e')
 
     # Obtener las coordenadas de las cimas de las barras
     heights1, edges1 = np.histogram(x1, bins=[i * 0.0001 for i in range(5001)], range=(0, 0.5), density=True)
@@ -52,5 +39,9 @@ if __name__ == "__main__":
     plt.plot(x_vals3, y_vals3, '-', color='r', label="y = 42")
     plt.legend()
 
+    plt.savefig(directory + 'times.png')
+    plt.clf()
 
-    plt.savefig('../resources/times.png')
+
+if __name__ == "__main__":
+    density_graph('../resources/graphs/')

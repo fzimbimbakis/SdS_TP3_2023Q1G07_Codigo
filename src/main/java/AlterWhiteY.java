@@ -35,8 +35,7 @@ public class AlterWhiteY {
 
     }
 
-    //private static final int times = 1000;
-    private static final int times = 10000;
+    private static final int times = 1000;
 
     static class ThreadAux implements Runnable {
         private final double deltaY;
@@ -51,50 +50,20 @@ public class AlterWhiteY {
             config.setWhiteY(config.getWhiteY() + this.deltaY);
             String file_path = Ovito.createFile("times_" + df.format(config.getWhiteY()) + "_", "txt");
             String total_time_path = Ovito.createFile("total_time_" + df.format(config.getWhiteY()) + "_", "txt");
-            double totalTime = 0;
-            //List<Double> eventTimes = new ArrayList<>();
+            String frequency_path = Ovito.createFile("frequency_" + df.format(config.getWhiteY()) + "_", "txt");
+            List<Double> totalTimes = new ArrayList<>();
+            List<Double> frequencies = new ArrayList<>();
             for (int i = 0; i < times; i++) {
                 ParticleCollisionSystem particleCollisionSystem = new ParticleCollisionSystem(config);
 
                 particleCollisionSystem.run();
 
-                totalTime += particleCollisionSystem.getFinalTime();
-                //eventTimes.addAll(eventTimes);
+                totalTimes.add(particleCollisionSystem.getFinalTime());
+                frequencies.add(((double) particleCollisionSystem.getEventTimes().size()) / particleCollisionSystem.getFinalTime());
                 Ovito.writeListToFIle(particleCollisionSystem.getEventTimes(), file_path, i == times - 1);
             }
-            Ovito.writeToFIle(totalTime, total_time_path);
-            //Ovito.writeToFIle("\n", total_time_path);
-            //Ovito.writeToFIle(AlterWhiteY.getStandardDeviation(eventTimes), total_time_path);
-            //Ovito.writeToFIle("\n", total_time_path);
-            //Ovito.writeToFIle(AlterWhiteY.getMean(eventTimes), total_time_path);
-            //System.out.println("Finished with deltaY = " + deltaY);
+            Ovito.writeListToFIle(totalTimes, total_time_path, true);
+            Ovito.writeListToFIle(frequencies, frequency_path, true);
         }
     }
-
-    public static double getMean(List<Double> data){
-        return (data.stream().mapToDouble(f -> f).sum())/data.size();
-    }
-
-    public static double getStandardDeviation(List<Double> data) {
-        // sd is sqrt of sum of (values-mean) squared divided by n - 1
-        // Calculate the mean
-        double mean = 0;
-        final int n = data.size();
-        if (n < 2) {
-            return Double.NaN;
-        }/*  www  .  ja  v  a 2s.c  o  m*/
-        for (int i = 0; i < n; i++) {
-            mean += data.get(i);
-        }
-        mean /= n;
-        // calculate the sum of squares
-        double sum = 0;
-        for (int i = 0; i < n; i++) {
-            final double v = data.get(i) - mean;
-            sum += v * v;
-        }
-        // Change to ( n - 1 ) to n if you have complete data instead of a sample.
-        return Math.sqrt(sum / (n - 1));
-    }
-
 }
