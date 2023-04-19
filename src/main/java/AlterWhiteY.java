@@ -2,6 +2,8 @@ import utils.JsonConfigReader;
 import utils.Ovito;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +35,7 @@ public class AlterWhiteY {
 
     }
 
-    private static final int times = 10000;
+    private static final int times = 1000;
 
     static class ThreadAux implements Runnable {
         private final double deltaY;
@@ -48,16 +50,20 @@ public class AlterWhiteY {
             config.setWhiteY(config.getWhiteY() + this.deltaY);
             String file_path = Ovito.createFile("times_" + df.format(config.getWhiteY()) + "_", "txt");
             String total_time_path = Ovito.createFile("total_time_" + df.format(config.getWhiteY()) + "_", "txt");
-            double totalTime = 0;
+            String frequency_path = Ovito.createFile("frequency_" + df.format(config.getWhiteY()) + "_", "txt");
+            List<Double> totalTimes = new ArrayList<>();
+            List<Double> frequencies = new ArrayList<>();
             for (int i = 0; i < times; i++) {
                 ParticleCollisionSystem particleCollisionSystem = new ParticleCollisionSystem(config);
 
                 particleCollisionSystem.run();
 
-                totalTime += particleCollisionSystem.getFinalTime();
+                totalTimes.add(particleCollisionSystem.getFinalTime());
+                frequencies.add(((double) particleCollisionSystem.getEventTimes().size()) / particleCollisionSystem.getFinalTime());
                 Ovito.writeListToFIle(particleCollisionSystem.getEventTimes(), file_path, i == times - 1);
             }
-            Ovito.writeToFIle(totalTime, total_time_path);
+            Ovito.writeListToFIle(totalTimes, total_time_path, true);
+            Ovito.writeListToFIle(frequencies, frequency_path, true);
         }
     }
 }
