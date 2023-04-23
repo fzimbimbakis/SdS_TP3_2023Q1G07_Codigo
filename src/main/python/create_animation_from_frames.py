@@ -2,9 +2,9 @@ import os
 import glob
 import imageio
 # Ruta a la carpeta que contiene las imágenes
-animation_frames_folder = '/Users/facuzf/Downloads/SdS_TP3_2023Q1G07_Codigo/src/main/resources/animations/white_middle/frames'
+animation_frames_folder = '/home/bsquillari/IdeaProjects/SdS_TP3_2023Q1G07_Codigo/src/main/resources/animations/test_determinismo/frames'
 frames_files_name_format = 'frame*.png'
-animation_name = '/Users/facuzf/Downloads/SdS_TP3_2023Q1G07_Codigo/src/main/resources/animations/white_middle/animation.mp4'
+animation_name = '/home/bsquillari/IdeaProjects/SdS_TP3_2023Q1G07_Codigo/src/main/resources/animations/test_determinismo/animation.mp4'
 
 
 def main():

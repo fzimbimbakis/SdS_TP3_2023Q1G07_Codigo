@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 
 
@@ -12,24 +14,14 @@ def get_times(path):
 
     return data
 
+def remove_outliers(times, reference):
+    array = []
+    for time in times:
+        if time <= (1000000000000000000000000000000):
+            array.append(time)
+        else:
+            print(reference + str(time))
+    return array
 
-def remove_outliers_top(times):
-    top_limit, bottom_limit = get_outliers_limit(times)
-    return times[times <= top_limit]
-
-
-def remove_outliers(times):
-    top_limit, bottom_limit = get_outliers_limit(times)
-    times = times[times <= top_limit]
-    return times[times >= bottom_limit]
-
-
-def get_outliers_limit(times):
-    times = np.sort(times)
-    q1 = np.percentile(times, 25)
-    q3 = np.percentile(times, 75)
-    iqr = q3 - q1
-    top_limit = q3 + iqr * 3
-    bottom_limit = q3 - iqr * 3
-
-    return top_limit, bottom_limit
+def get_standard_error(times):
+    return np.std(times) / math.sqrt(len(times))
