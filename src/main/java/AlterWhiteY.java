@@ -35,7 +35,7 @@ public class AlterWhiteY {
 
     }
 
-    private static final int times = 1000;
+    private static final int times = 10000;
 
     static class ThreadAux implements Runnable {
         private final double deltaY;
@@ -59,6 +59,7 @@ public class AlterWhiteY {
                 particleCollisionSystem.run();
 
                 totalTimes.add(particleCollisionSystem.getFinalTime());
+
                 frequencies.add(((double) particleCollisionSystem.getEventTimes().size()) / particleCollisionSystem.getFinalTime());
                 Ovito.writeListToFIle(particleCollisionSystem.getEventTimes(), file_path, i == times - 1);
             }
